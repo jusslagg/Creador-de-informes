@@ -16,7 +16,6 @@ from docx.shared import RGBColor
 
 # Configura la API de Gemini
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-st.write(f"API Key from environment: {GEMINI_API_KEY}")
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Modelo Gemini
