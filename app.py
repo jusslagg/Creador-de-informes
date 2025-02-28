@@ -9,7 +9,7 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import tempfile
 import requests
-
+from bs4 import BeautifulSoup
 import os
 import re
 from docx.shared import RGBColor
