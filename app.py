@@ -24,7 +24,7 @@ model = genai.GenerativeModel('gemini-1.5-pro-001')
 st.title("CAT-AI")
 
 uploaded_file = st.file_uploader("Carga tu archivo Excel, CSV o Word", type=["xls", "xlsx", "csv", "docx"])
-web_url = st.text_input("Ingresa la URL de la página web")
+web_url = st.text_input("Ingresa la URL de la Página Web")
 
 def is_valid_url(url):
     # Regex para validar una URL
