@@ -114,9 +114,10 @@ if data_type != "none":
     )
 
     if st.button("Generar"):
-        # Analiza los datos con Gemini
-        if data_type == "excel/csv":
-            prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos presentes en el archivo proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en cómo mejorar la eficiencia y rentabilidad de la organización, teniendo en cuenta el nivel del usuario:
+        with st.spinner("Generando informe..."):
+            # Analiza los datos con Gemini
+            if data_type == "excel/csv":
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos presentes en el archivo proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en cómo mejorar la eficiencia y rentabilidad de la organización, teniendo en cuenta el nivel del usuario:
 
             Nivel del usuario: {level}
 
@@ -127,8 +128,8 @@ if data_type != "none":
             Subtítulo 1: [Subtítulo 1]
             Subtítulo 2: [Subtítulo 2]
             Subtítulo 3: [Subtítulo 3]"""
-        elif data_type == "web":
-            prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en cómo mejorar la eficiencia y rentabilidad de la organización, teniendo en cuenta el nivel del usuario:
+            elif data_type == "web":
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en cómo mejorar la eficiencia y rentabilidad de la organización, teniendo en cuenta el nivel del usuario:
 
             Nivel del usuario: {level}
 
@@ -143,8 +144,8 @@ if data_type != "none":
             Subtítulo 1: [Subtítulo 1]
             Subtítulo 2: [Subtítulo 2]
             Subtítulo 3: [Subtítulo 3]"""
-        else:
-            prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en cómo mejorar la eficiencia y rentabilidad de la organización, teniendo en cuenta el nivel del usuario:
+            else:
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en cómo mejorar la eficiencia y rentabilidad de la organización, teniendo en cuenta el nivel del usuario:
 
             Nivel del usuario: {level}
 
@@ -159,91 +160,91 @@ if data_type != "none":
             Subtítulo 1: [Subtítulo 1]
             Subtítulo 2: [Subtítulo 2]
             Subtítulo 3: [Subtítulo 3]"""
-        response = model.generate_content(prompt)
-        informe = response.text
+            response = model.generate_content(prompt)
+            informe = response.text
 
-        st.write("Informe generado por Gemini:")
+            st.write("Informe generado por Gemini:")
 
-        # Divide el informe en líneas
-        lines = informe.splitlines()
+            # Divide el informe en líneas
+            lines = informe.splitlines()
 
-        # Itera sobre las líneas y da formato a los títulos y subtítulos
-        for line in lines:
-            if line.startswith("Título principal:"):
-                st.title(line[17:])
-            elif line.startswith("Subtítulo 1:"):
-                st.subheader(line[13:])
-            elif line.startswith("Subtítulo 2:"):
-                st.subheader(line[13:])
-            elif line.startswith("Subtítulo 3:"):
-                st.subheader(line[13:])
+            # Itera sobre las líneas y da formato a los títulos y subtítulos
+            for line in lines:
+                if line.startswith("Título principal:"):
+                    st.title(line[17:])
+                elif line.startswith("Subtítulo 1:"):
+                    st.subheader(line[13:])
+                elif line.startswith("Subtítulo 2:"):
+                    st.subheader(line[13:])
+                elif line.startswith("Subtítulo 3:"):
+                    st.subheader(line[13:])
+                else:
+                    st.write(line)
+
+            # Genera gráficos
+            if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
+                fig, ax = plt.subplots()
+                df.hist(ax=ax)
+                plt.tight_layout()
+
+                # Guarda el gráfico en un archivo temporal
+                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+                    fig.savefig(tmpfile.name, format="png")
+                    temp_filename = tmpfile.name
+            elif len(df.columns) > 0:
+                # Si no hay columnas numéricas o de fecha y hora, genera un gráfico de barras con la frecuencia de los nombres
+                fig, ax = plt.subplots()
+                nombres = df.iloc[:, 0].value_counts()
+                nombres.plot(kind='bar', ax=ax)
+                plt.tight_layout()
+
+                # Guarda el gráfico en un archivo temporal
+                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+                    fig.savefig(tmpfile.name, format="png")
+                    temp_filename = tmpfile.name
             else:
-                st.write(line)
+                temp_filename = None
 
-        # Genera gráficos
-        if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
-            fig, ax = plt.subplots()
-            df.hist(ax=ax)
-            plt.tight_layout()
-
-            # Guarda el gráfico en un archivo temporal
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                fig.savefig(tmpfile.name, format="png")
-                temp_filename = tmpfile.name
-        elif len(df.columns) > 0:
-            # Si no hay columnas numéricas o de fecha y hora, genera un gráfico de barras con la frecuencia de los nombres
-            fig, ax = plt.subplots()
-            nombres = df.iloc[:, 0].value_counts()
-            nombres.plot(kind='bar', ax=ax)
-            plt.tight_layout()
-
-            # Guarda el gráfico en un archivo temporal
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                fig.savefig(tmpfile.name, format="png")
-                temp_filename = tmpfile.name
-        else:
-            temp_filename = None
-
-        # Genera el informe en Word
-        document = Document()
-        document.add_heading('Informe Generado por CAT-AI', 0)
-        #document.add_paragraph(informe)
+            # Genera el informe en Word
+            document = Document()
+            document.add_heading('Informe Generado por CAT-AI', 0)
+            #document.add_paragraph(informe)
             
-        # Divide el informe en líneas
-        lines = informe.splitlines()
+            # Divide el informe en líneas
+            lines = informe.splitlines()
 
-        # Itera sobre las líneas y da formato a los títulos y subtítulos
-        for line in lines:
-            if line.startswith("Título principal:"):
-                heading = document.add_heading(line[17:], level=1)
-                heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                heading.style.font.bold = True
-            elif line.startswith("Subtítulo 1:"):
-                heading = document.add_heading(line[13:], level=2)
-                heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                heading.style.font.bold = True
-            elif line.startswith("Subtítulo 2:"):
-                heading = document.add_heading(line[13:], level=3)
-                heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                heading.style.font.bold = True
-            elif line.startswith("Subtítulo 3:"):
-                heading = document.add_heading(line[13:], level=4)
-                heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                heading.style.font.bold = True
-            else:
-                document.add_paragraph(line)
+            # Itera sobre las líneas y da formato a los títulos y subtítulos
+            for line in lines:
+                if line.startswith("Título principal:"):
+                    heading = document.add_heading(line[17:], level=1)
+                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    heading.style.font.bold = True
+                elif line.startswith("Subtítulo 1:"):
+                    heading = document.add_heading(line[13:], level=2)
+                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    heading.style.font.bold = True
+                elif line.startswith("Subtítulo 2:"):
+                    heading = document.add_heading(line[13:], level=3)
+                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    heading.style.font.bold = True
+                elif line.startswith("Subtítulo 3:"):
+                    heading = document.add_heading(line[13:], level=4)
+                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    heading.style.font.bold = True
+                else:
+                    document.add_paragraph(line)
             
-        if temp_filename:
-            document.add_picture(temp_filename, width=Inches(6))
+            if temp_filename:
+                document.add_picture(temp_filename, width=Inches(6))
 
-        # Guarda el documento en memoria
-        docx_stream = BytesIO()
-        document.save(docx_stream)
-        docx_stream.seek(0)
+            # Guarda el documento en memoria
+            docx_stream = BytesIO()
+            document.save(docx_stream)
+            docx_stream.seek(0)
 
-        st.download_button(
-            label="Descargar informe en Word",
-            data=docx_stream,
-            file_name="informe.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        )
+            st.download_button(
+                label="Descargar informe en Word",
+                data=docx_stream,
+                file_name="informe.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
