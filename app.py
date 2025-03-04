@@ -123,7 +123,7 @@ if data_type != "none":
 
             Análisis de tendencias y focos de atención: Basándote EXCLUSIVAMENTE en los resultados específicos que se encuentran en el archivo proporcionado, realiza un análisis de tendencias en profundidad, comparando datos semejantes cuando sea necesario para identificar puntos de mejora. Destaca los focos de atención principales que impactan la eficiencia y rentabilidad de la organización. Desarrolla la información al máximo, profundizando en los detalles y proporcionando indicaciones claras y concisas sobre dónde se debe hacer foco para optimizar las operaciones y aumentar la rentabilidad. Proporciona al menos 5 oportunidades de mejora específicas y accionables para cada aspecto analizado, desde la perspectiva de un analista experto en control de gestión. Para cada área analizada, identifica y describe lo que más se hace, lo que más se destaca y lo que menos se hace. No te limites en la cantidad de información proporcionada, sé lo más exhaustivo y detallado posible, incluyendo todos los puntos relevantes, tanto positivos como negativos.
             A continuación, se muestra el contenido del archivo: {df.to_string()}.
-            El informe debe estar en español. Genera un informe original, no copies contenido existente. Utiliza los siguientes encabezados para los títulos y subtítulos:
+            El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
             Título principal: [Título principal]
             Subtítulo 1: [Subtítulo 1]
             Subtítulo 2: [Subtítulo 2]
@@ -135,11 +135,10 @@ if data_type != "none":
 
             Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
             Identificación de ideas clave: Resume las ideas más importantes del texto.
-            Análisis de sentimiento: Determina el sentimiento general del texto (positivo, negativo, neutral).
             Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
             Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco. Proporciona al menos 5 oportunidades de mejora específicas y accionables para cada aspecto analizado, desde la perspectiva de un analista experto en control de gestión. Para cada área analizada, identifica y describe lo que más se hace, lo que más se destaca y lo que menos se hace. No te limites en la cantidad de información proporcionada, sé lo más exhaustivo y detallado posible, incluyendo todos los puntos relevantes, tanto positivos como negativos.
             A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}.
-            El informe debe estar en español. Genera un informe original, no copies contenido existente. Utiliza los siguientes encabezados para los títulos y subtítulos:
+            El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. Utiliza los siguientes encabezados para los títulos y subtítulos:
             Título principal: [Título principal]
             Subtítulo 1: [Subtítulo 1]
             Subtítulo 2: [Subtítulo 2]
@@ -151,11 +150,10 @@ if data_type != "none":
 
             Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
             Identificación de ideas clave: Resume las ideas más importantes del texto.
-            Análisis de sentimiento: Determina el sentimiento general del texto (positivo, negativo, neutral).
             Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
             Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco. Proporciona al menos 5 oportunidades de mejora específicas y accionables para cada aspecto analizado, desde la perspectiva de un analista experto en control de gestión. Para cada área analizada, identifica y describe lo que más se hace, lo que más se destaca y lo que menos se hace. No te limites en la cantidad de información proporcionada, sé lo más exhaustivo y detallado posible, incluyendo todos los puntos relevantes, tanto positivos como negativos.
             A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}.
-            El informe debe estar en español. Genera un informe original, no copies contenido existente. Utiliza los siguientes encabezados para los títulos y subtítulos:
+            El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
             Título principal: [Título principal]
             Subtítulo 1: [Subtítulo 1]
             Subtítulo 2: [Subtítulo 2]
@@ -171,39 +169,39 @@ if data_type != "none":
             # Itera sobre las líneas y da formato a los títulos y subtítulos
             for line in lines:
                 if line.startswith("Título principal:"):
-                    st.title(line[17:])
+                    st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{line[17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
                 elif line.startswith("Subtítulo 1:"):
-                    st.subheader(line[13:])
+                    st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
                 elif line.startswith("Subtítulo 2:"):
-                    st.subheader(line[13:])
+                    st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
                 elif line.startswith("Subtítulo 3:"):
-                    st.subheader(line[13:])
+                    st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
                 else:
-                    st.write(line)
+                    st.write(line.replace('*', '').replace('#', ''))
 
             # Genera gráficos
-            if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
-                fig, ax = plt.subplots()
-                df.hist(ax=ax)
-                plt.tight_layout()
+            #if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
+            #    fig, ax = plt.subplots()
+            #    df.hist(ax=ax)
+            #    plt.tight_layout()
 
-                # Guarda el gráfico en un archivo temporal
-                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                    fig.savefig(tmpfile.name, format="png")
-                    temp_filename = tmpfile.name
-            elif len(df.columns) > 0:
-                # Si no hay columnas numéricas o de fecha y hora, genera un gráfico de barras con la frecuencia de los nombres
-                fig, ax = plt.subplots()
-                nombres = df.iloc[:, 0].value_counts()
-                nombres.plot(kind='bar', ax=ax)
-                plt.tight_layout()
+            #    # Guarda el gráfico en un archivo temporal
+            #    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+            #        fig.savefig(tmpfile.name, format="png")
+            #        temp_filename = tmpfile.name
+            #elif len(df.columns) > 0:
+            #    # Si no hay columnas numéricas o de fecha y hora, genera un gráfico de barras con la frecuencia de los nombres
+            #    fig, ax = plt.subplots()
+            #    nombres = df.iloc[:, 0].value_counts()
+            #    nombres.plot(kind='bar', ax=ax)
+            #    plt.tight_layout()
 
-                # Guarda el gráfico en un archivo temporal
-                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                    fig.savefig(tmpfile.name, format="png")
-                    temp_filename = tmpfile.name
-            else:
-                temp_filename = None
+            #    # Guarda el gráfico en un archivo temporal
+            #    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+            #        fig.savefig(tmpfile.name, format="png")
+            #        temp_filename = tmpfile.name
+            #else:
+            temp_filename = None
 
             # Genera el informe en Word
             document = Document()
@@ -216,26 +214,26 @@ if data_type != "none":
             # Itera sobre las líneas y da formato a los títulos y subtítulos
             for line in lines:
                 if line.startswith("Título principal:"):
-                    heading = document.add_heading(line[17:], level=1)
-                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                    heading.style.font.bold = True
+                    document.add_paragraph(line[17:])
+                    #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    #heading.style.font.bold = True
                 elif line.startswith("Subtítulo 1:"):
-                    heading = document.add_heading(line[13:], level=2)
-                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                    heading.style.font.bold = True
+                    document.add_paragraph(line[13:])
+                    #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    #heading.style.font.bold = True
                 elif line.startswith("Subtítulo 2:"):
-                    heading = document.add_heading(line[13:], level=3)
-                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                    heading.style.font.bold = True
+                    document.add_paragraph(line[13:])
+                    #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    #heading.style.font.bold = True
                 elif line.startswith("Subtítulo 3:"):
-                    heading = document.add_heading(line[13:], level=4)
-                    heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                    heading.style.font.bold = True
+                    document.add_paragraph(line[13:])
+                    #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                    #heading.style.font.bold = True
                 else:
                     document.add_paragraph(line)
             
-            if temp_filename:
-                document.add_picture(temp_filename, width=Inches(6))
+            #if temp_filename:
+            #    document.add_picture(temp_filename, width=Inches(6))
 
             # Guarda el documento en memoria
             docx_stream = BytesIO()
