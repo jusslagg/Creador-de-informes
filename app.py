@@ -6,7 +6,6 @@ from docx.shared import Inches
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
-import PyPDF2
 import matplotlib.pyplot as plt
 import tempfile
 import requests
@@ -24,7 +23,7 @@ model = genai.GenerativeModel('gemini-1.5-pro-001')
 
 st.title("CAT-AI")
 
-uploaded_file = st.file_uploader("Carga tu archivo Excel, CSV, Word o PDF", type=["xls", "xlsx", "csv", "docx", "pdf"])
+uploaded_file = st.file_uploader("Carga tu archivo Excel, CSV o Word", type=["xls", "xlsx", "csv", "docx"])
 web_url = st.text_input("Ingresa la URL de la Página Web")
 
 def is_valid_url(url):
@@ -64,18 +63,6 @@ if uploaded_file is not None:
                 text += paragraph.text + "\n"
             df = pd.DataFrame([text], columns=['text'])
             data_type = "word"
-        elif file_type == "application/pdf":
-            try:
-                pdf_reader = PyPDF2.PdfReader(uploaded_file)
-                text = ""
-                for page in pdf_reader.pages:
-                    text += page.extract_text() + "\n"
-                df = pd.DataFrame([text], columns=['text'])
-                data_type = "pdf"
-            except Exception as e:
-                st.write(f"No se pudo leer el archivo PDF. Error: {e}")
-                df = pd.DataFrame()
-                data_type = "none"
         else:
             st.write(f"Tipo de archivo no soportado: {file_type}")
             df = pd.DataFrame()
