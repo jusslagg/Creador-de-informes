@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 import os
 import re
 from docx.shared import RGBColor
+import PyPDF2
 
 # Configura la API de Gemini
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -23,7 +24,7 @@ model = genai.GenerativeModel('gemini-1.5-pro-001')
 
 st.title("CAT-AI")
 
-uploaded_file = st.file_uploader("Carga tu archivo Excel, CSV o Word", type=["xls", "xlsx", "csv", "docx"])
+uploaded_file = st.file_uploader("Carga tu archivo Excel, CSV, Word o PDF", type=["xls", "xlsx", "csv", "docx", "pdf"])
 web_url = st.text_input("Ingresa la URL de la Página Web")
 context_text = st.text_area("Ingresa el contexto para el análisis")
 uploaded_images = st.file_uploader("Carga tus imágenes", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
@@ -65,6 +66,18 @@ if uploaded_file is not None:
                 text += paragraph.text + "\n"
             df = pd.DataFrame([text], columns=['text'])
             data_type = "word"
+        elif file_type == "application/pdf":
+            try:
+                pdf_reader = PyPDF2.PdfReader(uploaded_file)
+                text = ""
+                for page in pdf_reader.pages:
+                    text += page.extract_text() + "\n"
+                df = pd.DataFrame([text], columns=['text'])
+                data_type = "pdf"
+            except Exception as e:
+                st.write(f"No se pudo leer el archivo PDF. Error: {e}")
+                df = pd.DataFrame()
+                data_type = "none"
         else:
             st.write(f"Tipo de archivo no soportado: {file_type}")
             df = pd.DataFrame()
@@ -181,9 +194,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un artículo de noticias sobre una empresa, el análisis debe identificar las principales fortalezas y debilidades de la empresa, las oportunidades y amenazas que enfrenta, y las tendencias clave que están afectando a la empresa.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                     elif level == "Gerente":
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en un enfoque balanceado entre lo operativo y lo comercial:
 
@@ -194,9 +207,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un informe de mercado, el análisis debe identificar las principales tendencias del mercado, las oportunidades de crecimiento y las amenazas competitivas.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                     elif level == "Director":
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento:
 
@@ -207,9 +220,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un análisis de la competencia, el análisis debe identificar las principales fortalezas y debilidades de los competidores, sus estrategias de mercado y las oportunidades para obtener una ventaja competitiva.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                     else:
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente:
 
@@ -220,9 +233,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un artículo sobre una nueva tecnología, el análisis debe identificar las principales características de la tecnología, sus ventajas y desventajas, y su potencial impacto en el mercado.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                 else:
                     if level == "Jefe de Site":
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en la eficiencia operativa, los costos, la productividad y los problemas del día a día en el sitio:
@@ -234,9 +247,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto describe las operaciones diarias de un sitio, el análisis debe enfocarse en identificar áreas de mejora en la eficiencia operativa, reducción de costos y aumento de la productividad.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                     elif level == "Gerente":
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en un enfoque balanceado entre lo operativo y lo comercial:
 
@@ -247,9 +260,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto describe la gestión de un departamento, el análisis debe enfocarse en identificar oportunidades para mejorar la rentabilidad, reducir costos y optimizar la asignación de recursos.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                     elif level == "Director":
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento:
 
@@ -260,9 +273,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto describe la estrategia de una empresa, el análisis debe enfocarse en identificar oportunidades para aumentar las ventas, mejorar la rentabilidad, aumentar la cuota de mercado y expandir el negocio.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                     else:
                         prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente:
 
@@ -273,9 +286,9 @@ if data_type != "none":
                         A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es una descripción general de una empresa, el análisis debe identificar las principales áreas de enfoque de la empresa y las oportunidades para mejorar su rendimiento.
                         El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                         Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
+                        Subtítulo 1: [Título principal]
+                        Subtítulo 2: [Título principal]
+                        Subtítulo 3: [Título principal]"""
                 response = model.generate_content(prompt)
                 informe = response.text
 
