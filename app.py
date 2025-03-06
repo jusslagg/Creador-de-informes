@@ -294,21 +294,48 @@ if data_type != "none":
 
                 st.write("Informe generado por Gemini:")
 
-                # Divide el informe en líneas
-                lines = informe.splitlines()
+                def dividir_informe_en_secciones(informe):
+                    secciones = []
+                    seccion_actual = {"titulo": None, "contenido": []}
+                    for line in informe.splitlines():
+                        if line.startswith("Título principal:"):
+                            if seccion_actual["titulo"] is not None:
+                                secciones.append(seccion_actual)
+                            seccion_actual = {"titulo": line, "contenido": []}
+                        elif line.startswith("Subtítulo 1:") or line.startswith("Subtítulo 2:") or line.startswith("Subtítulo 3:"):
+                            if seccion_actual["titulo"] is not None:
+                                secciones.append(seccion_actual)
+                            seccion_actual = {"titulo": line, "contenido": []}
+                        else:
+                            seccion_actual["contenido"].append(line)
+                    secciones.append(seccion_actual)
+                    return secciones
 
-                # Itera sobre las líneas y da formato a los títulos y subtítulos
-                for line in lines:
-                    if line.startswith("Título principal:"):
-                        st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{line[17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
-                    elif line.startswith("Subtítulo 1:"):
-                        st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
-                    elif line.startswith("Subtítulo 2:"):
-                        st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
-                    elif line.startswith("Subtítulo 3:"):
-                        st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
-                    else:
-                        st.write(line.replace('*', '').replace('#', ''))
+                def seccion_tiene_datos(seccion):
+                    # Esta función verifica si una sección tiene datos relevantes.
+                    # Puedes personalizar esta función para que se ajuste a tus necesidades.
+                    # Por ejemplo, puedes verificar si la sección contiene palabras clave específicas
+                    # o si la sección contiene un cierto número de caracteres.
+                    contenido = "".join(seccion["contenido"])
+                    return len(contenido.strip()) > 0
+
+                secciones = dividir_informe_en_secciones(informe)
+
+                # Itera sobre las secciones y muestra solo las que tienen datos
+                for seccion in secciones:
+                    if seccion_tiene_datos(seccion):
+                        if seccion["titulo"].startswith("Título principal:"):
+                            st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{seccion['titulo'][17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
+                        elif seccion["titulo"].startswith("Subtítulo 1:"):
+                            st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{seccion['titulo'][13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
+                        elif seccion["titulo"].startswith("Subtítulo 2:"):
+                            st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{seccion['titulo'][13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
+                        elif seccion["titulo"].startswith("Subtítulo 3:"):
+                            st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{seccion['titulo'][13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
+                        else:
+                            st.write(seccion["titulo"].replace('*', '').replace('#', ''))
+                        for line in seccion["contenido"]:
+                            st.write(line.replace('*', '').replace('#', ''))
 
                 # Genera gráficos
                 #if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
@@ -338,30 +365,32 @@ if data_type != "none":
                 document = Document()
                 document.add_heading('Informe Generado por CAT-AI', 0)
                 #document.add_paragraph(informe)
-                
-                # Divide el informe en líneas
-                lines = informe.splitlines()
 
-                # Itera sobre las líneas y da formato a los títulos y subtítulos
-                for line in lines:
-                    if line.startswith("Título principal:"):
-                        document.add_paragraph(line[17:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    elif line.startswith("Subtítulo 1:"):
-                        document.add_paragraph(line[13:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    elif line.startswith("Subtítulo 2:"):
-                        document.add_paragraph(line[13:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    elif line.startswith("Subtítulo 3:"):
-                        document.add_paragraph(line[13:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    else:
-                        document.add_paragraph(line)
+                secciones = dividir_informe_en_secciones(informe)
+
+                # Itera sobre las secciones y agrega solo las que tienen datos
+                for seccion in secciones:
+                    if seccion_tiene_datos(seccion):
+                        if seccion["titulo"].startswith("Título principal:"):
+                            document.add_paragraph(seccion["titulo"][17:])
+                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                            #heading.style.font.bold = True
+                        elif seccion["titulo"].startswith("Subtítulo 1:"):
+                            document.add_paragraph(seccion["titulo"][13:])
+                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                            #heading.style.font.bold = True
+                        elif seccion["titulo"].startswith("Subtítulo 2:"):
+                            document.add_paragraph(seccion["titulo"][13:])
+                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                            #heading.style.font.bold = True
+                        elif seccion["titulo"].startswith("Subtítulo 3:"):
+                            document.add_paragraph(seccion["titulo"][13:])
+                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
+                            #heading.style.font.bold = True
+                        else:
+                            document.add_paragraph(seccion["titulo"])
+                        for line in seccion["contenido"]:
+                            document.add_paragraph(line)
                 
                 #if temp_filename:
                 #    document.add_picture(temp_filename, width=Inches(6))
