@@ -321,21 +321,23 @@ if data_type != "none":
 
                 secciones = dividir_informe_en_secciones(informe)
 
-                # Itera sobre las secciones y muestra solo las que tienen datos
-                for seccion in secciones:
-                    if seccion_tiene_datos(seccion):
-                        if seccion["titulo"].startswith("Título principal:"):
-                            st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{seccion['titulo'][17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
-                        elif seccion["titulo"].startswith("Subtítulo 1:"):
-                            st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{seccion['titulo'][13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
-                        elif seccion["titulo"].startswith("Subtítulo 2:"):
-                            st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{seccion['titulo'][13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
-                        elif seccion["titulo"].startswith("Subtítulo 3:"):
-                            st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{seccion['titulo'][13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
-                        else:
-                            st.write(seccion["titulo"].replace('*', '').replace('#', ''))
-                        for line in seccion["contenido"]:
-                            st.write(line.replace('*', '').replace('#', ''))
+# Itera sobre las secciones y muestra solo las que tienen datos
+for seccion in secciones:
+    if seccion_tiene_datos(seccion):
+        titulo = seccion.get("titulo", "")
+        if isinstance(titulo, str):
+            if titulo.startswith("Título principal:"):
+                st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{titulo[17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
+            elif titulo.startswith("Subtítulo 1:"):
+                st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{titulo[13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
+            elif titulo.startswith("Subtítulo 2:"):
+                st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{titulo[13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
+            elif titulo.startswith("Subtítulo 3:"):
+                st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{titulo[13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
+            else:
+                st.write(titulo.replace('*', '').replace('#', ''))
+            for line in seccion["contenido"]:
+                st.write(line.replace('*', '').replace('#', ''))
 
                 # Genera gráficos
                 #if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
