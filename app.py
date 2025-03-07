@@ -373,29 +373,23 @@ if data_type != "none":
 
                 secciones = dividir_informe_en_secciones(informe)
 
-                # Itera sobre las secciones y agrega solo las que tienen datos
-                for seccion in secciones:
-                    if seccion_tiene_datos(seccion):
-                        if seccion["titulo"].startswith("Título principal:"):
-                            document.add_paragraph(seccion["titulo"][17:])
-                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                            #heading.style.font.bold = True
-                        elif seccion["titulo"].startswith("Subtítulo 1:"):
-                            document.add_paragraph(seccion["titulo"][13:])
-                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                            #heading.style.font.bold = True
-                        elif seccion["titulo"].startswith("Subtítulo 2:"):
-                            document.add_paragraph(seccion["titulo"][13:])
-                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                            #heading.style.font.bold = True
-                        elif seccion["titulo"].startswith("Subtítulo 3:"):
-                            document.add_paragraph(seccion["titulo"][13:])
-                            #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                            #heading.style.font.bold = True
-                        else:
-                            document.add_paragraph(seccion["titulo"])
-                        for line in seccion["contenido"]:
-                            document.add_paragraph(line)
+              # Itera sobre las secciones y agrega solo las que tienen datos
+for seccion in secciones:
+    if seccion_tiene_datos(seccion):
+        titulo = seccion.get("titulo", "")
+        if isinstance(titulo, str):
+            if titulo.startswith("Título principal:"):
+                st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{titulo[17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
+            elif titulo.startswith("Subtítulo 1:"):
+                st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{titulo[13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
+            elif titulo.startswith("Subtítulo 2:"):
+                st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{titulo[13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
+            elif titulo.startswith("Subtítulo 3:"):
+                st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{titulo[13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
+            else:
+                st.write(titulo.replace('*', '').replace('#', ''))
+            for line in seccion["contenido"]:
+                st.write(line.replace('*', '').replace('#', ''))
                 
                 #if temp_filename:
                 #    document.add_picture(temp_filename, width=Inches(6))
