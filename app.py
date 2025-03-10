@@ -84,8 +84,7 @@ if uploaded_file is not None:
             data_type = "none"
     except Exception as e:
         st.write(f"No se pudo leer el archivo. Error: {e}")
-        df = pd.DataFrame()  # Define df como un DataFrame vacío
-        #st.stop()
+        df = pd.DataFrame()
         data_type = "none"
 elif web_url and is_valid_url(web_url):
     try:
@@ -125,255 +124,149 @@ if data_type != "none":
     # Permite al usuario seleccionar el nivel del análisis
     level = st.selectbox(
         "Selecciona el nivel del análisis",
-        ("Jefe de Site", "Gerente", "Director"),
+        ["Análisis de Ranking", "Tiempos Productivos, Hold, Baño, Break", "Tableros de Incidencias", "Libre"]
     )
 
-    if st.button("Generar"):
+    if st.button("Empezar el análisis 🚀"):
         if df.empty:
             st.write("No hay datos para analizar. Por favor, carga un archivo o ingresa una URL.")
         else:
-            with st.spinner("Generando informe..."):
-                # Define prompts específicos para cada nivel de análisis
-                if data_type == "excel/csv":
-                    if level == "Jefe de Site":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos presentes en el archivo proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en la eficiencia operativa, los costos, la productividad y los problemas del día a día en el sitio:
+            if level == "Análisis de Ranking":
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo y **altamente enfocado** del ranking de agentes en el call center, basado en métricas clave como tiempo de respuesta, resolución de problemas, y satisfacción del cliente. **Es fundamental que el análisis se centre en el siguiente contexto proporcionado por el usuario, y que se le dé la máxima prioridad en la generación del informe: {context_text}. Por favor, asegúrate de que el informe refleje este contexto de manera precisa y detallada.** El informe debe detallar los siguientes aspectos:
 
-                        Análisis de eficiencia operativa: Identifica las áreas donde se pueden reducir costos y mejorar la eficiencia en el sitio.
-                        Análisis de productividad: Evalúa la productividad de los recursos y propone mejoras para optimizar el rendimiento.
-                        Identificación de problemas del día a día: Detecta los problemas operativos más comunes y sugiere soluciones prácticas.
-                        A continuación, se muestra el contenido del archivo: {df.to_string()}. Por ejemplo, si los datos incluyen columnas como "Fecha", "Producto", "Cantidad" y "Precio", el análisis debe considerar las tendencias en las ventas de productos a lo largo del tiempo, la rentabilidad de cada producto y la eficiencia en la gestión de inventario. Además, ten en cuenta el siguiente contexto proporcionado por el usuario: {context_text}. También, ten en cuenta las siguientes imágenes proporcionadas por el usuario: {', '.join([image.name for image in uploaded_images]) if uploaded_images else 'Ninguna'}.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
-                    elif level == "Gerente":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos presentes en el archivo proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en un enfoque balanceado entre lo operativo y lo comercial:
+                - **Rendimiento de los agentes:** Evalúa el rendimiento de cada agente en función de las métricas establecidas. ¿Qué agentes se destacan positivamente? ¿Cuáles presentan áreas de mejora?
+                - **Comparativa entre agentes:** Realiza un análisis comparativo entre los agentes, destacando las mejores prácticas que los agentes con mejores resultados siguen y las posibles áreas de mejora para los de bajo rendimiento.
+                - **Recomendaciones de mejora:** Propón estrategias concretas para mejorar el rendimiento de los agentes con menor ranking, considerando entrenamientos adicionales, ajustes en las herramientas de trabajo, o cambios en los procesos operativos.
 
-                        Análisis de rentabilidad: Evalúa la rentabilidad de las operaciones y propone estrategias para aumentarla.
-                        Análisis de costos: Identifica los principales costos y sugiere medidas para reducirlos sin afectar la calidad.
-                        Análisis de eficiencia operativa: Evalúa la eficiencia de los procesos y propone mejoras para optimizar el rendimiento.
-                        Análisis de ventas: Analiza las ventas y propone estrategias para aumentar los ingresos.
-                        A continuación, se muestra el contenido del archivo: {df.to_string()}. Por ejemplo, si los datos incluyen columnas como "Departamento", "Ingresos", "Gastos" y "Beneficios", el análisis debe enfocarse en la rentabilidad por departamento, la eficiencia en la asignación de recursos y las oportunidades de crecimiento.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
-                    elif level == "Director":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos presentes en el archivo proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento:
+                A continuación, se muestra el contenido del archivo de desempeño de los agentes: {df.to_string()}.
+                El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
+                Título principal: [Título principal]
+                Subtítulo 1: Análisis de rendimiento de los agentes
+                Subtítulo 2: Comparativa de agentes
+                Subtítulo 3: Estrategias de mejora"""
 
-                        Análisis de ventas: Evalúa el rendimiento de las ventas y propone estrategias para aumentar los ingresos y la cuota de mercado.
-                        Análisis de rentabilidad: Identifica los productos o servicios más rentables y sugiere estrategias para maximizar su contribución.
-                        Análisis de market share: Evalúa la posición de la empresa en el mercado y propone estrategias para aumentar la cuota de mercado.
-                        Análisis de estrategias de crecimiento: Evalúa las estrategias de crecimiento actuales y propone nuevas estrategias para expandir el negocio.
-                        A continuación, se muestra el contenido del archivo: {df.to_string()}. Por ejemplo, si los datos incluyen columnas como "Región", "Producto", "Ventas" y "Gastos de Marketing", el análisis debe enfocarse en la efectividad de las campañas de marketing por región, la rentabilidad de cada producto y las oportunidades de expansión.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
-                    else:
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos presentes en el archivo proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente:
+            elif level == "Tiempos Productivos, Hold, Baño, Break":
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis detallado sobre los tiempos productivos, los tiempos en espera (hold), los descansos (baño, break) y otros periodos de inactividad de los agentes en el call center. **Es fundamental que el análisis se centre en el siguiente contexto proporcionado por el usuario, y que se le dé la máxima prioridad en la generación del informe: {context_text}. Por favor, asegúrate de que el informe refleje este contexto de manera precisa y detallada.** El informe debe abordar lo siguiente:
 
-                        Análisis de tendencias y focos de atención: Basándote EXCLUSIVAMENTE en los resultados específicos que se encuentran en el archivo proporcionado, realiza un análisis de tendencias en profundidad, comparando datos semejantes cuando sea necesario para identificar puntos de mejora. Destaca los focos de atención principales que impactan la eficiencia y rentabilidad de la organización. Desarrolla la información al máximo, profundizando en los detalles y proporcionando indicaciones claras y concisas sobre dónde se debe hacer foco para optimizar las operaciones y aumentar la rentabilidad. Proporciona al menos 5 oportunidades de mejora específicas y accionables para cada aspecto analizado, desde la perspectiva de un analista experto en control de gestión. Para cada área analizada, identifica y describe lo que más se hace, lo que más se destaca y lo que menos se hace. No te limites en la cantidad de información proporcionada, sé lo más exhaustivo y detallado posible, incluyendo todos los puntos relevantes, tanto positivos como negativos.
-                        A continuación, se muestra el contenido del archivo: {df.to_string()}. Por ejemplo, si los datos incluyen información sobre clientes, productos y ventas, el análisis debe identificar las tendencias de compra de los clientes, los productos más vendidos y las oportunidades para aumentar las ventas.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Subtítulo 1]
-                        Subtítulo 2: [Subtítulo 2]
-                        Subtítulo 3: [Subtítulo 3]"""
-                elif data_type == "web":
-                    if level == "Jefe de Site":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en la eficiencia operativa, los costos, la productividad y los problemas del día a día en el sitio:
+                - **Tiempo productivo:** Analiza el tiempo que los agentes están efectivamente atendiendo llamadas o gestionando tareas operativas. ¿Está siendo aprovechado al máximo? ¿Cuánto tiempo de la jornada laboral se dedica a actividades productivas?
+                - **Tiempos de espera (Hold):** Examina los periodos en los que los agentes mantienen a los clientes en espera. ¿Están dentro de los límites esperados? ¿Cómo se pueden optimizar estos tiempos?
+                - **Pausas (Baño y Break):** Evalúa la frecuencia y duración de las pausas que toman los agentes. ¿Se están tomando en los momentos adecuados? ¿Hay alguna mejora en la gestión de los descansos para asegurar que los agentes mantengan su productividad sin afectar la calidad del servicio?
+                - **Recomendaciones:** Proporciona sugerencias para optimizar los tiempos de inactividad, ajustando las pausas o el tiempo en espera sin sacrificar la calidad del servicio al cliente.
 
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco en la eficiencia operativa, los costos, la productividad y los problemas del día a día en el sitio.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un artículo de noticias sobre una empresa, el análisis debe identificar las principales fortalezas y debilidades de la empresa, las oportunidades y amenazas que enfrenta, y las tendencias clave que están afectando a la empresa.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                    elif level == "Gerente":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en un enfoque balanceado entre lo operativo y lo comercial:
+                A continuación, se muestra el contenido del archivo con los registros de los tiempos: {df.to_string()}.
+                El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
+                Título principal: [Título principal]
+                Subtítulo 1: Análisis de tiempos productivos
+                Subtítulo 2: Evaluación de tiempos en espera (Hold)
+                Subtítulo 3: Optimización de pausas y descansos"""
 
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco en un enfoque balanceado entre lo operativo y lo comercial.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un informe de mercado, el análisis debe identificar las principales tendencias del mercado, las oportunidades de crecimiento y las amenazas competitivas.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                    elif level == "Director":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento:
+            elif level == "Tableros de Incidencias":
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de las incidencias reportadas en el call center, utilizando los tableros de incidencias. **Es fundamental que el análisis se centre en el siguiente contexto proporcionado por el usuario, y que se le dé la máxima prioridad en la generación del informe: {context_text}. Por favor, asegúrate de que el informe refleje este contexto de manera precisa y detallada.** El informe debe cubrir los siguientes aspectos:
 
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un análisis de la competencia, el análisis debe identificar las principales fortalezas y debilidades de los competidores, sus estrategias de mercado y las oportunidades para obtener una ventaja competitiva.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                    else:
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente:
+                - **Identificación de incidencias recurrentes:** Analiza las incidencias más comunes reportadas, tanto a nivel de clientes como de agentes. ¿Qué problemas están afectando más a la operación? ¿Cuáles son las áreas más problemáticas?
+                - **Frecuencia de incidencias:** Evalúa la frecuencia de las incidencias y su impacto en la eficiencia operativa. ¿Las incidencias están afectando los tiempos de atención al cliente? ¿Cómo se distribuyen las incidencias a lo largo del día o semana?
+                - **Resolución de incidencias:** Revisa cómo se están gestionando las incidencias. ¿Se están resolviendo a tiempo? ¿Existen procedimientos estandarizados para resolver problemas recurrentes?
+                - **Recomendaciones para la gestión de incidencias:** Propón acciones o procedimientos que puedan reducir la cantidad de incidencias y mejorar la velocidad de resolución.
 
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es un artículo sobre una nueva tecnología, el análisis debe identificar las principales características de la tecnología, sus ventajas y desventajas, y su potencial impacto en el mercado.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
+                A continuación, se muestra el contenido de los tableros de incidencias: {df.to_string()}.
+                El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
+                Título principal: [Título principal]
+                Subtítulo 1: Identificación y análisis de incidencias recurrentes
+                Subtítulo 2: Frecuencia e impacto de las incidencias
+                Subtítulo 3: Estrategias para mejorar la gestión de incidencias"""
+
+            elif level == "Libre":
+                prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo de los datos proporcionados en el archivo, sin limitaciones de un área específica. **Es fundamental que el análisis se centre en el siguiente contexto proporcionado por el usuario, y que se le dé la máxima prioridad en la generación del informe: {context_text}. Por favor, asegúrate de que el informe refleje este contexto de manera precisa y detallada.** El informe debe abordar lo siguiente:
+
+                - **Análisis detallado de la información:** Realiza un análisis completo de todos los datos disponibles, identificando patrones clave y áreas de mejora.
+                - **Recomendaciones de optimización:** Proporciona recomendaciones para mejorar las operaciones generales del call center basándote en los datos presentados.
+                - **Oportunidades de mejora:** Identifica y describe oportunidades de mejora en cualquier área que consideres relevante para optimizar la eficiencia, calidad del servicio, y productividad en el call center.
+
+                A continuación, se muestra el contenido del archivo con los datos proporcionados: {df.to_string()}.
+                El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
+                Título principal: [Título principal]
+                Subtítulo 1: Análisis general
+                Subtítulo 2: Identificación de oportunidades
+                Subtítulo 3: Estrategias de optimización"""
+
+            response = model.generate_content(prompt)
+            informe = response.text
+
+            st.write("Informe generado por Gemini:")
+
+            # Divide el informe en líneas
+            lines = informe.splitlines()
+
+            # Itera sobre las líneas y da formato a los títulos y subtítulos
+            for line in lines:
+                if line.startswith("Título principal:"):
+                    st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{line[17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
+                elif line.startswith("Subtítulo 1:"):
+                    st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
+                elif line.startswith("Subtítulo 2:"):
+                    st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
+                elif line.startswith("Subtítulo 3:"):
+                    st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
                 else:
-                    if level == "Jefe de Site":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en la eficiencia operativa, los costos, la productividad y los problemas del día a día en el sitio:
+                    st.write(line.replace('*', '').replace('#', ''))
 
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco en la eficiencia operativa, los costos, la productividad y los problemas del día a día en el sitio.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto describe las operaciones diarias de un sitio, el análisis debe enfocarse en identificar áreas de mejora en la eficiencia operativa, reducción de costos y aumento de la productividad.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                    elif level == "Gerente":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en un enfoque balanceado entre lo operativo y lo comercial:
-
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco en un enfoque balanceado entre lo operativo y lo comercial.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto describe la gestión de un departamento, el análisis debe enfocarse en identificar oportunidades para mejorar la rentabilidad, reducir costos y optimizar la asignación de recursos.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                    elif level == "Director":
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente, enfocándote en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento:
-
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco en los aspectos comerciales, como las ventas, la rentabilidad, el market share y las estrategias de crecimiento.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto describe la estrategia de una empresa, el análisis debe enfocarse en identificar oportunidades para aumentar las ventas, mejorar la rentabilidad, aumentar la cuota de mercado y expandir el negocio.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                    else:
-                        prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis exhaustivo del texto proporcionado. Genera un informe profesional y extremadamente detallado que describa lo siguiente:
-
-                        Análisis de contenido: Explica el tema principal del texto y los subtemas que se tratan.
-                        Identificación de ideas clave: Resume las ideas más importantes del texto.
-                        Identificación de entidades: Identifica las personas, lugares, organizaciones y otros elementos relevantes que se mencionan en el texto.
-                        Análisis de tendencias: Realiza un análisis de tendencias, comparando datos semejantes y haciendo indicaciones sobre dónde se debe hacer foco.
-                        A continuación, se muestra el contenido del texto: {df['text'].iloc[0]}. Por ejemplo, si el texto es una descripción general de una empresa, el análisis debe identificar las principales áreas de enfoque de la empresa y las oportunidades para mejorar su rendimiento.
-                        El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
-                        Título principal: [Título principal]
-                        Subtítulo 1: [Título principal]
-                        Subtítulo 2: [Título principal]
-                        Subtítulo 3: [Título principal]"""
-                response = model.generate_content(prompt)
-                informe = response.text
-
-                st.write("Informe generado por Gemini:")
-
-                # Divide el informe en líneas
-                lines = informe.splitlines()
-
-                # Itera sobre las líneas y da formato a los títulos y subtítulos
-                for line in lines:
-                    if line.startswith("Título principal:"):
-                        st.markdown(f"<h1 style='color: blue; font-weight: bold;'>{line[17:].replace('*', '').replace('#', '')}</h1>", unsafe_allow_html=True)
-                    elif line.startswith("Subtítulo 1:"):
-                        st.markdown(f"<h2 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h2>", unsafe_allow_html=True)
-                    elif line.startswith("Subtítulo 2:"):
-                        st.markdown(f"<h3 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h3>", unsafe_allow_html=True)
-                    elif line.startswith("Subtítulo 3:"):
-                        st.markdown(f"<h4 style='color: blue; font-weight: bold;'>{line[13:].replace('*', '').replace('#', '')}</h4>", unsafe_allow_html=True)
-                    else:
-                        st.write(line.replace('*', '').replace('#', ''))
-
-                # Genera gráficos
-                #if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
-                #    fig, ax = plt.subplots()
-                #    df.hist(ax=ax)
-                #    plt.tight_layout()
-
-                #    # Guarda el gráfico en un archivo temporal
-                #    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                #        fig.savefig(tmpfile.name, format="png")
-                #        temp_filename = tmpfile.name
-                #elif len(df.columns) > 0:
-                #    # Si no hay columnas numéricas o de fecha y hora, genera un gráfico de barras con la frecuencia de los nombres
-                #    fig, ax = plt.subplots()
-                #    nombres = df.iloc[:, 0].value_counts()
-                #    nombres.plot(kind='bar', ax=ax)
-                #    plt.tight_layout()
-
-                #    # Guarda el gráfico en un archivo temporal
-                #    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                #        fig.savefig(tmpfile.name, format="png")
-                #        temp_filename = tmpfile.name
-                #else:
-                temp_filename = None
-
-                # Genera el informe en Word
-                document = Document()
-                document.add_heading('Informe Generado por CAT-AI', 0)
-                #document.add_paragraph(informe)
+                    # Genera gráficos
+                    #if len(df.select_dtypes(include=['number', 'datetime']).columns) > 0:
+                    #    fig, ax = plt.subplots()
+                    #    df.hist(ax=ax)
+                    #    plt.tight_layout()
                 
-                # Divide el informe en líneas
-                lines = informe.splitlines()
+                    #    # Guarda el gráfico en un archivo temporal
+                    #    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+                    #        fig.savefig(tmpfile.name, format="png")
+                    #        temp_filename = tmpfile.name
+                    #elif len(df.columns) > 0:
+                    #    # Si no hay columnas numéricas o de fecha y hora, genera un gráfico de barras con la frecuencia de los nombres
+                    #    fig, ax = plt.subplots()
+                    #    nombres = df.iloc[:, 0].value_counts()
+                    #    nombres.plot(kind='bar', ax=ax)
+                    #    plt.tight_layout()
+                
+                    #    # Guarda el gráfico en un archivo temporal
+                    #    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+                    #        fig.savefig(tmpfile.name, format="png")
+                    #        temp_filename = tmpfile.name
+                    #else:
+            temp_filename = None
 
-                # Itera sobre las líneas y da formato a los títulos y subtítulos
-                for line in lines:
-                    if line.startswith("Título principal:"):
-                        document.add_paragraph(line[17:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    elif line.startswith("Subtítulo 1:"):
-                        document.add_paragraph(line[13:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    elif line.startswith("Subtítulo 2:"):
-                        document.add_paragraph(line[13:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    elif line.startswith("Subtítulo 3:"):
-                        document.add_paragraph(line[13:])
-                        #heading.style.font.color.rgb = RGBColor(0x00, 0x00, 0xFF)
-                        #heading.style.font.bold = True
-                    else:
-                        document.add_paragraph(line)
+        # Genera el informe en Word
+        document = Document()
+        document.add_heading('Informe Generado por CAT-AI', 0)
+        #document.add_paragraph(informe)
+
+        # Divide el informe en líneas
+        lines = informe.splitlines()
+
+        # Itera sobre las líneas y da formato a los títulos y subtítulos
+        for line in lines:
+            if line.startswith("Título principal:"):
+                document.add_paragraph(line[17:])
+            elif line.startswith("Subtítulo 1:"):
+                document.add_paragraph(line[13:])
+            elif line.startswith("Subtítulo 2:"):
+                document.add_paragraph(line[13:])
+            elif line.startswith("Subtítulo 3:"):
+                document.add_paragraph(line[13:])
+            else:
+                document.add_paragraph(line)
+
                 
                 #if temp_filename:
                 #    document.add_picture(temp_filename, width=Inches(6))
-
+            
                 # Guarda el documento en memoria
-                docx_stream = BytesIO()
-                document.save(docx_stream)
-                docx_stream.seek(0)
+        docx_stream = BytesIO()
+        document.save(docx_stream)
+        docx_stream.seek(0)
 
-                st.download_button(
-                    label="Descargar informe en Word",
-                    data=docx_stream,
-                    file_name="informe.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                )
+        st.download_button(
+            label="Descargar informe en Word",
+            data=docx_stream,
+            file_name="informe.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
