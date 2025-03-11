@@ -137,13 +137,19 @@ if data_type != "none":
                 - **Rendimiento de los agentes:** Evalúa el rendimiento de cada agente en función de las métricas establecidas. ¿Qué agentes se destacan positivamente? ¿Cuáles presentan áreas de mejora?
                 - **Comparativa entre agentes:** Realiza un análisis comparativo entre los agentes, destacando las mejores prácticas que los agentes con mejores resultados siguen y las posibles áreas de mejora para los de bajo rendimiento.
                 - **Recomendaciones de mejora:** Propón estrategias concretas para mejorar el rendimiento de los agentes con menor ranking, considerando entrenamientos adicionales, ajustes en las herramientas de trabajo, o cambios en los procesos operativos.
+                - **Top 10:** Identifica y describe el top 10 de los agentes con mejor rendimiento, destacando sus fortalezas y mejores prácticas.
+                - **Peores 10:** Identifica y describe los 10 agentes con peor rendimiento, señalando las áreas de mejora y posibles causas de su bajo desempeño.
+                - **Cuartilización:** Divide a los agentes en cuartiles según su rendimiento y analiza las características de cada cuartil. ¿Qué diferencias existen entre los agentes de los diferentes cuartiles? ¿Qué estrategias se pueden implementar para ayudar a los agentes a subir de cuartil?
 
                 A continuación, se muestra el contenido del archivo de desempeño de los agentes: {df.to_string()}.
                 El informe debe estar en español. Genera un informe original, no copies contenido existente. No utilices asteriscos ni numerales en el informe. No incluyas sugerencias de gráficos. Utiliza los siguientes encabezados para los títulos y subtítulos:
                 Título principal: [Título principal]
                 Subtítulo 1: Análisis de rendimiento de los agentes
                 Subtítulo 2: Comparativa de agentes
-                Subtítulo 3: Estrategias de mejora"""
+                Subtítulo 3: Estrategias de mejora
+                Subtítulo 4: Top 10 más destacados
+                Subtítulo 5: Top 10 menos destacados
+                Subtítulo 6: Análisis de cuartilización"""
 
             elif level == "Tiempos Productivos, Hold, Baño, Break":
                 prompt = f"""Como analista experto en control de gestión (CAT-AI), realiza un análisis detallado sobre los tiempos productivos, los tiempos en espera (hold), los descansos (baño, break) y otros periodos de inactividad de los agentes en el call center. **Es fundamental que el análisis se centre en el siguiente contexto proporcionado por el usuario, y que se le dé la máxima prioridad en la generación del informe: {context_text}. Por favor, asegúrate de que el informe refleje este contexto de manera precisa y detallada.** El informe debe abordar lo siguiente:
