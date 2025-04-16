@@ -182,6 +182,7 @@ if data_type != "none" and not df.empty:
                 response = model.generate_content(contents)
                 informe = response.text
                 st.write("## Informe Generado")
+                st.caption("Informe generado por CAT-AI")
                 for line in informe.splitlines():
                     st.write(line)
 
